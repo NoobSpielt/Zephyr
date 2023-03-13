@@ -21,7 +21,6 @@ client.on('interactionCreate', async (interaction) => {
         const roles = process.env.ACCES_GROUPS.split(',');
         
         const hasAllowedRole = interaction.member.roles.cache.some(r => roles.includes(r.id));
-        console.log(hasAllowedRole);
         // Restrict Acces to some group. We don't want indefinite git issues, do we?. Maybe we should even restrict some group from using it even if they have the role.
         if (!hasAllowedRole) {
             return interaction.reply({
@@ -52,7 +51,6 @@ client.on('interactionCreate', async (interaction) => {
 
         modal.addComponents(repoActionRow, titleActionRow);
         await interaction.showModal(modal);
-        console.log("bis hier")
 
 
     } else if (!interaction.isModalSubmit()) { return; }
@@ -63,14 +61,16 @@ client.on('interactionCreate', async (interaction) => {
             try {
                 const response = await createIssue(repoName, issueTitle, interaction.user.tag);
                 const issueNumber = response.data.repository.full_name + "#" + response.data.number;
+
                 await interaction.client.application.fetch();
+                interaction.reply({ content: `Creating Issue...`, ephemeral: true }); // We need this so the form doesn't stay open
 
                 const embed = new EmbedBuilder()
                     .setTitle(`Internal Issue ${issueNumber}`)
                     .setDescription(`The issue has been created for ${interaction.user.tag}.`)
                     .setColor('#008000')
                     .setFooter({ text: `Created by ${interaction.client.application.owner.tag}` });
-                await interaction.reply({ embeds: [embed] });
+                await message.reply({ embeds: [embed] });
             } catch (error) {
                 console.error(error);
                 await interaction.reply('An error occurred while creating the issue.');
