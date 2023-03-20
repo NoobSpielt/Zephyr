@@ -192,8 +192,8 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
         const embed = new EmbedBuilder()
 
             .setTitle('User Joined Monitored Channel')
-            .setDescription(`${user} has joined the monitored channel ${joinedChannel.name}!`)
-            .setColor('#0099ff')
+            .setDescription(`${user} has joined the monitored channel: ${joinedChannel.name}!`)
+            .setColor('#ffff00')
             .setTimestamp()
           //  .setFooter({ text: `Bot created by ${interaction.client.application.owner.tag}` }) 
         ;
