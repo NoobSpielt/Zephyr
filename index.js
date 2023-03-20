@@ -2,7 +2,7 @@ const { Client, Intents, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInput
 const axios = require('axios');
 require('dotenv').config();
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildVoiceStates] });
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
     client.application.commands.create({
@@ -174,5 +174,32 @@ async function createIssue(repoName, issueTitle, UserTag, oldIssueNumber) {
     }
 
 }
+
+client.on('voiceStateUpdate', async (oldState, newState) => {
+    // Load the monitored channel IDs from the .env file
+    const monitoredChannelIDs = process.env.MONITORED_CHANNELS.split(',');
+
+    // Load the role IDs to mention from the .env file
+    const roleIDsToMention = process.env.MENTION_ROLES.split(',');
+
+    // Check if the user joined one of the monitored channels
+    if (monitoredChannelIDs.includes(newState.channelId) && oldState.channelId !== newState.channelId) {
+        const user = newState.member.user;
+        const joinedChannel = await newState.guild.channels.fetch(newState.channelId);
+        const textChannel = await newState.guild.channels.fetch(process.env.TEXT_CHANNEL_ID);
+        const roleMentions = roleIDsToMention.map(id => `<@&${id}>`).join(' ');
+        // Send a message mentioning the roles and the channel name in the specified text channel
+        const embed = new EmbedBuilder()
+
+            .setTitle('User Joined Monitored Channel')
+            .setDescription(`${user} has joined the monitored channel ${joinedChannel.name}!`)
+            .setColor('#0099ff')
+            .setTimestamp()
+          //  .setFooter({ text: `Bot created by ${interaction.client.application.owner.tag}` }) 
+        ;
+        textChannel.send({ content: `Attention: ${roleMentions}`, embeds: [embed] });
+
+}
+});
 
 client.login(process.env.BOT_TOKEN);
