@@ -4,6 +4,7 @@
     "cheerio": "^1.0.0-rc.12",
     "discord.js": "^14.8.0",
     "dotenv": "^16.0.3",
+    "he": "^1.2.0",
     "nodemon": "^2.0.21",
     "turndown": "^7.1.1"
   }

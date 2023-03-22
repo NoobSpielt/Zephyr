@@ -1,5 +1,6 @@
 const { Client, Intents, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, GatewayIntentBits, ActionRowBuilder } = require('discord.js');
 const axios = require('axios');
+const he = require('he');
 require('dotenv').config();
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildVoiceStates] });
@@ -121,7 +122,8 @@ async function createIssue(repoName, issueTitle, UserTag, oldIssueNumber) {
 
     if (oldIssueNumber) {
         const url = `${process.env.GITEA_HOST}/api/v1/repos/${repoName}/issues/${oldIssueNumber}/comments`;
-        const messageContent = message.content;
+        const messageContent = he.encode(message.content);
+
 
         let body = `**Follow up message:** ${messageContent}`;
         if (imageUrls.length > 0) {
@@ -147,7 +149,7 @@ async function createIssue(repoName, issueTitle, UserTag, oldIssueNumber) {
 
     } else {
         const url = `${process.env.GITEA_HOST}/api/v1/repos/${repoName}/issues`;
-        const messageContent = message.content;
+        const messageContent = he.encode(message.content);
 
         let body = `**Message:** ${messageContent}`;
         if (imageUrls.length > 0) {
